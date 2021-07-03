@@ -1,5 +1,9 @@
 # Conscript Release Notes
 
+## 0.1.3
+
++ [305cf38](https://github.com/jsirois/conscript/commit/305cf38) Fixup changelog.
+
 ## 0.1.2
 
 + [2b9d5c7](https://github.com/jsirois/conscript/commit/2b9d5c7) Expand README.
