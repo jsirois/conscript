@@ -26,19 +26,32 @@ if conscript.__version__ in previous_tag:
     )
 
 changes = subprocess.check_output(
-    args=["git", "log", "--oneline", "--no-decorate", "HEAD...{}".format(previous_tag)],
+    args=[
+        "git",
+        "log",
+        "--pretty=format:+ [%h](https://github.com/jsirois/conscript/commit/%h) %s",
+        "HEAD...{}".format(previous_tag),
+    ],
 ).decode()
 
-with open("CHANGES.md", "a") as fp:
+with open("CHANGES.md") as fp:
+    # Discard title and blank line following it.
+    fp.readline()
+    fp.readline()
+
+    changelog = fp.read()
+
+with open("CHANGES.md", "w") as fp:
     fp.write(
         dedent(
             """\
+            # Conscript Release Notes
+
             ## {version}
 
             {changes}
+
+            {changelog}
             """
-        ).format(
-            version=conscript.__version__,
-            changes=os.linesep.join("+ {}".format(line) for line in changes.splitlines()),
-        )
+        ).format(version=conscript.__version__, changes=changes, changelog=changelog)
     )
