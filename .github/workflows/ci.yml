@@ -1,0 +1,61 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  org_check:
+    if: ${{ github.repository_owner == 'jsirois' }}
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Noop
+        run: "true"
+  checks:
+    name: TOXENV=${{ matrix.tox-env }}
+    needs: org_check
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        include:
+          - check-name: Lint
+            python-version: 3.9
+            tox-env: lint
+          - check-name: Types
+            python-version: 3.9
+            tox-env: typecheck
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: "${{ matrix.python-version }}"
+      - name: Check ${{ matrix.check-name }}
+        uses: pantsbuild/actions/run-tox@95209b287c817c78a765962d40ac6cea790fc511
+        with:
+          tox-env: ${{ matrix.tox-env }}
+  unit-tests:
+    name: (${{ matrix.os }}) TOXENV=py${{ join(matrix.python-version, '') }}
+    needs: org_check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version: [[2, 7], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9]]
+        os: [ubuntu-20.04, macos-10.15]
+        exclude:
+          - os: macos-10.15
+            python-version: [3, 5]
+          - os: macos-10.15
+            python-version: [3, 6]
+          - os: macos-10.15
+            python-version: [3, 7]
+          - os: macos-10.15
+            python-version: [3, 8]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Python ${{ join(matrix.python-version, '.') }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: "${{ join(matrix.python-version, '.') }}"
+      - name: Run Unit Tests
+        uses: pantsbuild/actions/run-tox@95209b287c817c78a765962d40ac6cea790fc511
+        with:
+          tox-env: py${{ join(matrix.python-version, '') }} -- -vvs

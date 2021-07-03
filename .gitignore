@@ -1,0 +1,6 @@
+*.pyc
+/*.iml
+/.idea/
+/.tox/
+/dist/
+__pycache__/
