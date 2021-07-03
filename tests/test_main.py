@@ -91,19 +91,14 @@ def test_conscript(foo_bar_conscript):
         == get_output(args=[foo_bar_conscript, "foo", "-h"])
     )
 
-    process = subprocess.Popen(
-        args=[foo_bar_conscript, "baz"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-    )
-    output, _ = process.communicate()
-    assert 2 == process.returncode
     assert (
         "usage: {argv0} [-h] [PROGRAM]\n"
         "{argv0}: error: argument PROGRAM: invalid choice: 'baz' (choose from {programs})\n"
     ).format(
         argv0=os.path.basename(foo_bar_conscript),
         programs=", ".join("'{}'".format(program) for program in EXPECTED_PROGRAMS),
-    ) == output.decode(
-        "utf8"
+    ) == get_output(
+        args=[foo_bar_conscript, "baz"], expected_returncode=2
     )
 
 
@@ -121,11 +116,6 @@ def test_busybox(foo_bar_conscript):
 
     non_program_symlink = os.path.join(basedir, "baz")
     os.symlink(foo_bar_conscript, non_program_symlink)
-    process = subprocess.Popen(
-        args=[non_program_symlink, "-h"], stdout=subprocess.PIPE, stderr=subprocess.STDOUT
-    )
-    output, _ = process.communicate()
-    assert 0 == process.returncode
     # N.B.: We insert a string of '*' and later replace these with spaces to work around `dedent`
     # stripping away significant whitespace indentation performed by the help formatter.
     assert (
@@ -147,7 +137,7 @@ def test_busybox(foo_bar_conscript):
         )
         .replace("*", " ")
         .format(programs="\n              + ".join(EXPECTED_PROGRAMS))
-        == output.decode("utf8")
+        == get_output(args=[non_program_symlink, "-h"])
     )
 
 
