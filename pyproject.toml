@@ -21,9 +21,6 @@ classifiers = [
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
-  "Topic :: Software Development :: Build Tools",
-  "Topic :: System :: Archiving :: Packaging",
-  "Topic :: System :: Software Distribution",
   "Topic :: Utilities",
 ]
 requires-python = ">=2.7,<3.10,!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*"
@@ -39,8 +36,8 @@ conscript = "conscript.main:main"
 include = ["CHANGES.md"]
 
 [tool.flit.metadata.urls]
-Changelog = "https://github.com/jsirois/python-busybox/blob/main/CHANGES.md"
-Documentation = "https://github.com/jsirois/python-busybox/blob/main/README.md"
+Changelog = "https://github.com/jsirois/conscript/blob/main/CHANGES.md"
+Documentation = "https://github.com/jsirois/conscript/blob/main/README.md"
 
 [tool.black]
 line-length = 100
