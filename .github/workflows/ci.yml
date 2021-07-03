@@ -1,7 +1,8 @@
 name: CI
 on: [push, pull_request]
 jobs:
-  org_check:
+  org-check:
+    name: Check GitHub Organization
     if: ${{ github.repository_owner == 'jsirois' }}
     runs-on: ubuntu-20.04
     steps:
@@ -9,7 +10,7 @@ jobs:
         run: "true"
   checks:
     name: TOXENV=${{ matrix.tox-env }}
-    needs: org_check
+    needs: org-check
     runs-on: ubuntu-20.04
     strategy:
       matrix:
@@ -33,7 +34,7 @@ jobs:
           tox-env: ${{ matrix.tox-env }}
   unit-tests:
     name: (${{ matrix.os }}) TOXENV=py${{ join(matrix.python-version, '') }}
-    needs: org_check
+    needs: org-check
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
