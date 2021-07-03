@@ -48,7 +48,7 @@ except ImportError:
 
 
 def main():
-    # type: () -> None
+    # type: () -> Any
     argv0 = sys.argv[0]
     exe_name = os.path.basename(argv0)
     console_scripts = OrderedDict(
@@ -101,11 +101,11 @@ def main():
     # There is no program being executed so now it's safe to process `-h` as our own.
     if args.help:
         parser.print_help()
-        sys.exit(0)
+        return
 
     # No entry point has been picked so drop to a repl.
     code.interact()
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
