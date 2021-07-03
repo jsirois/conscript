@@ -92,7 +92,7 @@ for creating zipapps with third party dependencies; so they lead to concise exam
 
 The capabilities exposed by Conscript are the same as in the Pex example, so this example is
 abbreviated to the basics. The primary difference is that Shiv does not fully isolate requested
-dependencies in the zipapp from incidental dependencies and so wee see more available console
+dependencies in the zipapp from incidental dependencies and so we see more available console
 scripts than in the Pex case.
 
 1. Create the BusyBox shiv zipapp:
