@@ -71,6 +71,9 @@ EXPECTED_PROGRAMS = sorted(
 )
 
 
+OPTIONS_HEADER = "optional arguments" if sys.version_info[:2] < (3, 10) else "options"
+
+
 def test_conscript(foo_bar_conscript):
     # type: (str) -> Any
     assert_version(args=[foo_bar_conscript, "foo"], expected_version=FOO_VERSION)
@@ -83,11 +86,11 @@ def test_conscript(foo_bar_conscript):
 
             The foo program.
 
-            optional arguments:
+            {options_header}:
               -h, --help     show this help message and exit
               -V, --version  show program's version number and exit
             """
-        ).format(argv0=os.path.basename(foo_bar_conscript))
+        ).format(options_header=OPTIONS_HEADER, argv0=os.path.basename(foo_bar_conscript))
         == get_output(args=[foo_bar_conscript, "foo", "-h"])
     )
 
@@ -131,12 +134,14 @@ def test_busybox(foo_bar_conscript):
                           The following programs are available:
                           + {programs}
 
-            optional arguments:
+            {options_header}:
               -h, --help  Show this help message and exit.
             """
         )
         .replace("*", " ")
-        .format(programs="\n              + ".join(EXPECTED_PROGRAMS))
+        .format(
+            programs="\n              + ".join(EXPECTED_PROGRAMS), options_header=OPTIONS_HEADER
+        )
         == get_output(args=[non_program_symlink, "-h"])
     )
 
