@@ -33,7 +33,7 @@ jobs:
         with:
           tox-env: ${{ matrix.tox-env }}
   unit-tests:
-    name: (${{ matrix.os }}) TOXENV=py${{ join(matrix.python-version, '') }}
+    name: (${{ matrix.os }}) TOXENV=py${{ matrix.python-version[0] }}${{ matrix.python-version[1] }}
     needs: org-check
     runs-on: ${{ matrix.os }}
     strategy:
@@ -56,11 +56,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Python ${{ matrix.python-version[0] }}${{ matrix.python-version[1] }}
+      - name: Setup Python ${{ join(matrix.python-version, '.') }}
         uses: actions/setup-python@v3
         with:
-          python-version: "${{ matrix.python-version[0] }}${{ matrix.python-version[1] }}"
+          python-version: "${{ join(matrix.python-version, '.') }}"
       - name: Run Unit Tests
         uses: pantsbuild/actions/run-tox@95209b287c817c78a765962d40ac6cea790fc511
         with:
-          tox-env: py${{ join(matrix.python-version, '') }} -- -vvs
+          tox-env: py${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
