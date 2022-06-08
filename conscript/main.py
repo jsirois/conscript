@@ -38,7 +38,6 @@ try:
         # type: () -> Iterable[EntryPoint]
         return entry_points().get("console_scripts", ())
 
-
 except ImportError:
     from pkg_resources import iter_entry_points  # type: ignore
 
