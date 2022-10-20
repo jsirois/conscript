@@ -36,7 +36,14 @@ try:
 
     def iter_console_scripts():
         # type: () -> Iterable[EntryPoint]
-        return entry_points().get("console_scripts", ())
+        eps = entry_points()
+        select = getattr(eps, "select", None)
+        if select:
+            # The stable API as of Python 3.10 / newest importlib-metadata backports.
+            return select(group="console_scripts")
+        else:
+            # The older deprecated API where entry_points() returns a dict..
+            return eps.get("console_scripts", ())
 
 except ImportError:
     from pkg_resources import iter_entry_points  # type: ignore
