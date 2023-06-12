@@ -31,23 +31,23 @@ def create_conscript(
 ):
     # type: (...) -> CreateConscript
 
-    def create_conscript_pex(requirements):
+    def create_conscript_zipapp(requirements):
         # type: (Iterable[str]) -> str
-        pex = os.path.join(
+        pyz = os.path.join(
             str(
                 tmpdir_factory.mktemp(
                     hashlib.sha1(json.dumps(sorted(list(requirements))).encode("utf8")).hexdigest()
                 )
             ),
-            "conscript.pex",
+            "conscript.pyz",
         )
-        args = [sys.executable, "-m", "pex", project_root_dir]
+        args = [sys.executable, "-m", "shiv", project_root_dir]
         args.extend(requirements)
-        args.extend(["-c", "conscript", "-o", pex])
+        args.extend(["-c", "conscript", "-o", pyz])
         subprocess.check_call(args)
-        return pex
+        return pyz
 
-    return create_conscript_pex
+    return create_conscript_zipapp
 
 
 @pytest.fixture(scope="session")

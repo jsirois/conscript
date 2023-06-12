@@ -4,14 +4,14 @@ jobs:
   org-check:
     name: Check GitHub Organization
     if: ${{ github.repository_owner == 'jsirois' }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Noop
         run: "true"
   checks:
     name: TOXENV=${{ matrix.tox-env }}
     needs: org-check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         include:
@@ -38,20 +38,20 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        python-version: [[2, 7], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11, "0-beta.3"]]
-        os: [ubuntu-20.04, macos-10.15]
+        python-version: [[2, 7], [3, 5], [3, 6], [3, 7], [3, 8], [3, 9], [3, 10], [3, 11], [3, 12, "0-beta.2"]]
+        os: [ubuntu-22.04, macos-12]
         exclude:
-          - os: macos-10.15
+          - os: macos-12
             python-version: [3, 5]
-          - os: macos-10.15
+          - os: macos-12
             python-version: [3, 6]
-          - os: macos-10.15
+          - os: macos-12
             python-version: [3, 7]
-          - os: macos-10.15
+          - os: macos-12
             python-version: [3, 8]
-          - os: macos-10.15
+          - os: macos-12
             python-version: [3, 9]
-          - os: macos-10.15
+          - os: macos-12
             python-version: [3, 10]
     steps:
       - name: Checkout
