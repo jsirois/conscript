@@ -43,6 +43,8 @@ jobs:
     needs: [org_check, determine-tag]
     runs-on: ubuntu-22.04
     environment: Release
+    permissions:
+      id-token: write
     steps:
       - name: Checkout ${{ needs.determine-tag.outputs.release-tag }}
         uses: actions/checkout@v3
