@@ -31,6 +31,22 @@ def create_conscript(
 ):
     # type: (...) -> CreateConscript
 
+    def create_conscript_pex(requirements):
+        # type: (Iterable[str]) -> str
+        pex = os.path.join(
+            str(
+                tmpdir_factory.mktemp(
+                    hashlib.sha1(json.dumps(sorted(list(requirements))).encode("utf8")).hexdigest()
+                )
+            ),
+            "conscript.pex",
+        )
+        args = [sys.executable, "-m", "pex", project_root_dir]
+        args.extend(requirements)
+        args.extend(["-c", "conscript", "-o", pex])
+        subprocess.check_call(args)
+        return pex
+
     def create_conscript_zipapp(requirements):
         # type: (Iterable[str]) -> str
         pyz = os.path.join(
@@ -47,7 +63,10 @@ def create_conscript(
         subprocess.check_call(args)
         return pyz
 
-    return create_conscript_zipapp
+    if sys.version_info[:2] <= (3, 11):
+        return create_conscript_pex
+    else:
+        return create_conscript_zipapp
 
 
 @pytest.fixture(scope="session")
