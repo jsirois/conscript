@@ -5,4 +5,4 @@ A Python BusyBox console script.
 
 from __future__ import absolute_import
 
-__version__ = "0.1.5"  # N.B.: Flit uses this as out distribution version.
+__version__ = "0.1.6"  # N.B.: Flit uses this as out distribution version.

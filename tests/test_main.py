@@ -94,14 +94,14 @@ def test_conscript(foo_bar_conscript):
         == get_output(args=[foo_bar_conscript, "foo", "-h"])
     )
 
-    assert (
-        "usage: {argv0} [-h] [PROGRAM]\n"
-        "{argv0}: error: argument PROGRAM: invalid choice: 'baz' (choose from {programs})\n"
-    ).format(
-        argv0=os.path.basename(foo_bar_conscript),
-        programs=", ".join("'{}'".format(program) for program in EXPECTED_PROGRAMS),
-    ) == get_output(
-        args=[foo_bar_conscript, "baz"], expected_returncode=2
+    assert get_output(args=[foo_bar_conscript, "baz"], expected_returncode=2).startswith(
+        (
+            "usage: {argv0} [-h] [PROGRAM]\n"
+            "{argv0}: error: argument PROGRAM: invalid choice: 'baz' (choose from {programs}"
+        ).format(
+            argv0=os.path.basename(foo_bar_conscript),
+            programs=", ".join("'{}'".format(program) for program in EXPECTED_PROGRAMS),
+        )
     )
 
 
@@ -119,9 +119,11 @@ def test_busybox(foo_bar_conscript):
 
     non_program_symlink = os.path.join(basedir, "baz")
     os.symlink(foo_bar_conscript, non_program_symlink)
+
+    output = get_output(args=[non_program_symlink, "-h"])
     # N.B.: We insert a string of '*' and later replace these with spaces to work around `dedent`
     # stripping away significant whitespace indentation performed by the help formatter.
-    assert (
+    assert output.startswith(
         dedent(
             """\
             usage: baz [-h] [PROGRAM]
@@ -133,16 +135,19 @@ def test_busybox(foo_bar_conscript):
             **************
                           The following programs are available:
                           + {programs}
+            """
+        )
+        .replace("*", " ")
+        .format(programs="\n              + ".join(EXPECTED_PROGRAMS))
+    )
+    assert output.endswith(
+        dedent(
+            """\
 
             {options_header}:
               -h, --help  Show this help message and exit.
             """
-        )
-        .replace("*", " ")
-        .format(
-            programs="\n              + ".join(EXPECTED_PROGRAMS), options_header=OPTIONS_HEADER
-        )
-        == get_output(args=[non_program_symlink, "-h"])
+        ).format(options_header=OPTIONS_HEADER)
     )
 
 

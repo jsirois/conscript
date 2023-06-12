@@ -11,14 +11,14 @@ on:
 jobs:
   org_check:
     if: ${{ github.repository_owner == 'jsirois' }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
       - name: Noop
         run: "true"
   determine-tag:
     name: Determine the release tag to operate against.
     needs: org_check
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     outputs:
       release-tag: ${{ steps.determine-tag.outputs.release-tag }}
       release-version: ${{ steps.determine-tag.outputs.release-version }}
@@ -41,7 +41,7 @@ jobs:
   pypi:
     name: Publish sdist and wheel to PyPI
     needs: [org_check, determine-tag]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     environment: Release
     steps:
       - name: Checkout ${{ needs.determine-tag.outputs.release-tag }}
@@ -52,10 +52,13 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: 3.9
-      - name: Publish ${{ needs.determine-tag.outputs.release-tag }}
+      - name: Package ${{ needs.determine-tag.outputs.release-tag }}
         uses: pantsbuild/actions/run-tox@e63d2d0e3c339bdffbe5e51e7c39550e3bc527bb
-        env:
-          FLIT_USERNAME: ${{ secrets.PYPI_USERNAME }}
-          FLIT_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
         with:
-          tox-env: publish
+          tox-env: package
+      - name: Publish ${{ needs.determine-tag.outputs.release-tag }}
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          print-hash: true
+          verbose: true
+
