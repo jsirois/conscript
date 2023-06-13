@@ -1,5 +1,9 @@
 # Conscript Release Notes
 
+## 0.1.6
+
++ [20ad68a](https://github.com/jsirois/conscript/commit/20ad68a)Add support for Python 3.12. (#7)
+
 ## 0.1.5
 
 + [2f55788](https://github.com/jsirois/conscript/commit/2f55788) Handle EntryPoints.get removal. (#5)
