@@ -1,8 +1,12 @@
 # Conscript Release Notes
 
+## 0.1.7
+
++ [271e589](https://github.com/jsirois/conscript/commit/271e589) Add support for Python 3.13. (#8)
+
 ## 0.1.6
 
-+ [20ad68a](https://github.com/jsirois/conscript/commit/20ad68a)Add support for Python 3.12. (#7)
++ [20ad68a](https://github.com/jsirois/conscript/commit/20ad68a) Add support for Python 3.12. (#7)
 
 ## 0.1.5
 
