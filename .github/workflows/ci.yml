@@ -52,7 +52,9 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Python ${{ join(matrix.python-version, '.') }}
         id: pyenv
-        uses: gabrielfalcao/pyenv-action@v18
+        # Upgrade node16 -> node20: Out for review here:
+        #   https://github.com/gabrielfalcao/pyenv-action/pull/444
+        uses: pex-tool/pyenv-action@baec18679698d2f80064cc04eb9ad0c8dc5ca8f8
         with:
           default: "${{ join(matrix.python-version, '.') }}"
       - name: Run Unit Tests
