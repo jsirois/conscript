@@ -96,7 +96,7 @@ jobs:
           alias python="${{ steps.pyenv.outputs.pyenv_root }}/versions/${{ join(matrix.python-version, '.') }}/bin/python"
           python -V
 
-          pyver = "${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
+          pyver="${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
           if [[ "3.8" == "${pyver}" ]]; then
             python -mensurepip -U
           else
