@@ -41,8 +41,6 @@ jobs:
         include:
           - python-version: [2, 7, 18]
             os: ubuntu-24.04
-          - python-version: [3, 5, 10]
-            os: ubuntu-24.04
           - python-version: [3, 6, 15]
             os: ubuntu-24.04
           - python-version: [3, 7, 17]
