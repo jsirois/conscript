@@ -4,14 +4,14 @@ jobs:
   org-check:
     name: Check GitHub Organization
     if: ${{ github.repository_owner == 'jsirois' }}
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Noop
         run: "true"
   checks:
     name: TOXENV=${{ matrix.tox-env }}
     needs: org-check
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     strategy:
       matrix:
         include:
@@ -20,7 +20,7 @@ jobs:
             tox-env: lint
           - check-name: Types
             python-version: 3.9
-            tox-env: typecheck
+            tox-env: check
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -40,13 +40,17 @@ jobs:
       matrix:
         include:
           - python-version: [2, 7, 18]
-            os: ubuntu-22.04
+            os: ubuntu-24.04
           - python-version: [3, 5, 10]
-            os: ubuntu-22.04
+            os: ubuntu-24.04
           - python-version: [3, 6, 15]
-            os: ubuntu-22.04
+            os: ubuntu-24.04
+          - python-version: [3, 7, 17]
+            os: ubuntu-24.04
+          - python-version: [3, 8, 18]
+            os: ubuntu-24.04
           - python-version: [2, 7, 18]
-            os: macos-12
+            os: macos-13
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,24 +75,21 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: ubuntu-22.04
-            python-version: [3, 7]
-          - os: ubuntu-22.04
-            python-version: [3, 8]
-          - os: ubuntu-22.04
             python-version: [3, 9]
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             python-version: [3, 10]
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             python-version: [3, 11]
-          - os: ubuntu-22.04
+          - os: ubuntu-24.04
             python-version: [3, 12]
-          - os: ubuntu-22.04
-            python-version: [3, 13, "0-alpha.2"]
-          - os: macos-12
-            python-version: [3, 12]
-          - os: macos-12
-            python-version: [3, 13, "0-alpha.2"]
+          - os: ubuntu-24.04
+            python-version: [3, 13]
+          - os: ubuntu-24.04
+            python-version: [3, 14, "0-alpha.1"]
+          - os: macos-13
+            python-version: [3, 13]
+          - os: macos-13
+            python-version: [3, 14, "0-alpha.1"]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
