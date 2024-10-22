@@ -50,8 +50,9 @@ def get_output(
     # type: (...) -> Text
     process = subprocess.Popen(args=args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     output, _ = process.communicate()
-    assert expected_returncode == process.returncode
-    return output.decode("utf8")
+    decoded_output = output.decode("utf8")
+    assert expected_returncode == process.returncode, decoded_output
+    return decoded_output
 
 
 def assert_version(
@@ -86,6 +87,7 @@ def test_conscript(foo_bar_conscript):
         # For zipapps, its `sys.executable <zip>`.
         else "python3.{minor} {zipapp}".format(minor=sys.version_info[1], zipapp=foo_bar_conscript)
     )
+    output = get_output(args=[foo_bar_conscript, "foo", "-h"])
     assert (
         dedent(
             """\
@@ -98,8 +100,8 @@ def test_conscript(foo_bar_conscript):
               -V, --version  show program's version number and exit
             """
         ).format(options_header=OPTIONS_HEADER, argv0=argv0)
-        == get_output(args=[foo_bar_conscript, "foo", "-h"])
-    )
+        == output
+    ), output
 
     output = get_output(args=[foo_bar_conscript, "baz"], expected_returncode=2)
     assert output.startswith(
@@ -164,7 +166,7 @@ def test_busybox(foo_bar_conscript):
               -h, --help  Show this help message and exit.
             """
         ).format(options_header=OPTIONS_HEADER)
-    )
+    ), output
 
 
 def test_repl(foo_bar_conscript):
@@ -187,5 +189,5 @@ def test_repl(foo_bar_conscript):
         ).encode("utf8")
     )
     repl_output = output.decode("utf8")
-    assert "foo=={}".format(FOO_VERSION) in repl_output
-    assert "bar=={}".format(BAR_VERSION) in repl_output
+    assert "foo=={}".format(FOO_VERSION) in repl_output, repl_output
+    assert "bar=={}".format(BAR_VERSION) in repl_output, repl_output
