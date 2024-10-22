@@ -70,6 +70,7 @@ def main():
 
     # Manual entrypoint execution with extra ergonomics:
     parser = argparse.ArgumentParser(
+        prog=exe_name,
         description="A {exe_name} busy box.".format(exe_name=exe_name),
         formatter_class=RawTextHelpFormatter,
         add_help=False,

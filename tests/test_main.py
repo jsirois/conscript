@@ -79,6 +79,13 @@ def test_conscript(foo_bar_conscript):
     assert_version(args=[foo_bar_conscript, "foo"], expected_version=FOO_VERSION)
     assert_version(args=[foo_bar_conscript, "bar"], expected_version=BAR_VERSION)
 
+    argv0 = (
+        os.path.basename(foo_bar_conscript)
+        if sys.version_info[:2] < (3, 14)
+        # N.B.: Python 3.14 changed how prog is calculated.
+        # For zipapps, its `sys.executable <zip>`.
+        else "python3.{minor} {zipapp}".format(minor=sys.version_info[1], zipapp=foo_bar_conscript)
+    )
     assert (
         dedent(
             """\
@@ -90,19 +97,28 @@ def test_conscript(foo_bar_conscript):
               -h, --help     show this help message and exit
               -V, --version  show program's version number and exit
             """
-        ).format(options_header=OPTIONS_HEADER, argv0=os.path.basename(foo_bar_conscript))
+        ).format(options_header=OPTIONS_HEADER, argv0=argv0)
         == get_output(args=[foo_bar_conscript, "foo", "-h"])
     )
 
-    assert get_output(args=[foo_bar_conscript, "baz"], expected_returncode=2).startswith(
+    output = get_output(args=[foo_bar_conscript, "baz"], expected_returncode=2)
+    assert output.startswith(
         (
             "usage: {argv0} [-h] [PROGRAM]\n"
             "{argv0}: error: argument PROGRAM: invalid choice: 'baz' (choose from {programs}"
         ).format(
             argv0=os.path.basename(foo_bar_conscript),
-            programs=", ".join("'{}'".format(program) for program in EXPECTED_PROGRAMS),
+            programs=", ".join(
+                (
+                    "'{}'".format(program)
+                    if sys.version_info[:2] < (3, 14)
+                    # N.B.: Python 3.14 dropped wrapping the choices in ''.
+                    else program
+                )
+                for program in EXPECTED_PROGRAMS
+            ),
         )
-    )
+    ), output
 
 
 def test_busybox(foo_bar_conscript):
