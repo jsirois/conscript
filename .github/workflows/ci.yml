@@ -13,7 +13,7 @@ concurrency:
 jobs:
   org-check:
     name: Check GitHub Organization
-    if: ${{ github.repository_owner == 'jsirois' }}
+    if: github.repository_owner == 'jsirois'
     runs-on: ubuntu-24.04
     steps:
       - name: Noop
@@ -51,6 +51,8 @@ jobs:
         include:
           - python-version: [2, 7, 18]
             os: ubuntu-24.04
+          - python-version: [3, 5, 10]
+            os: ubuntu-24.04
           - python-version: [3, 6, 15]
             os: ubuntu-24.04
           - python-version: [3, 7, 17]
@@ -62,6 +64,26 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Install Python Build Deps
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt update &&
+          sudo apt install -y \
+            build-essential \
+            libssl-dev \
+            zlib1g-dev \
+            libbz2-dev \
+            libreadline-dev \
+            libsqlite3-dev \
+            curl \
+            git \
+            libncursesw5-dev \
+            xz-utils \
+            tk-dev \
+            libxml2-dev \
+            libxmlsec1-dev \
+            libffi-dev \
+            liblzma-dev
       - name: Setup Python ${{ join(matrix.python-version, '.') }}
         id: pyenv
         # Upgrade node16 -> node20: Out for review here:
