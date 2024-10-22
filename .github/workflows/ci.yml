@@ -98,12 +98,13 @@ jobs:
 
           pyver="${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
           if [[ "3.8" == "${pyver}" ]]; then
-            python -mensurepip -U
+            python -mensurepip
           else
             curl -fLO https://bootstrap.pypa.io/pip/${pyver}/get-pip.py
             python get-pip.py
             rm get-pip.py
           fi
+          python -mpip install -U pip
           python -mpip install -U tox
           python -mtox -epy${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
   unit-tests:
@@ -136,8 +137,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "${{ join(matrix.python-version, '.') }}"
+      - name: Setup Tox Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.11
       - name: Run Unit Tests
         run: |
-          pip install -U pip
-          pip install -U tox
-          tox -epy${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
+          python3.11 -V
+          python3.11 -mpip install -U pip
+          python3.11 -mpip install -U tox
+          python3.11 -mtox -epy${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
