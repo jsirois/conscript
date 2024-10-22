@@ -57,13 +57,20 @@ def create_conscript(
             ),
             "conscript.pyz",
         )
-        args = [sys.executable, "-m", "shiv", project_root_dir]
+        args = [
+            sys.executable,
+            "-m",
+            "shiv",
+            project_root_dir,
+            "--python",
+            "/usr/bin/env python3.{minor}".format(minor=sys.version_info[1]),
+        ]
         args.extend(requirements)
         args.extend(["-c", "conscript", "-o", pyz])
         subprocess.check_call(args)
         return pyz
 
-    if sys.version_info[:2] <= (3, 11):
+    if sys.version_info[:2] <= (3, 12):
         return create_conscript_pex
     else:
         return create_conscript_zipapp

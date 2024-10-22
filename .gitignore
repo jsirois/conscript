@@ -2,5 +2,7 @@
 /*.iml
 /.idea/
 /.tox/
+/build/
+/conscript.egg-info/
 /dist/
 __pycache__/

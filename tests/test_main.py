@@ -46,12 +46,16 @@ def foo_bar_conscript(
 def get_output(
     args,  # type: List[str]
     expected_returncode=0,  # type: int
+    **kwargs  # type: str
 ):
     # type: (...) -> Text
-    process = subprocess.Popen(args=args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(
+        args=args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
+    )
     output, _ = process.communicate()
-    assert expected_returncode == process.returncode
-    return output.decode("utf8")
+    decoded_output = output.decode("utf8")
+    assert expected_returncode == process.returncode, decoded_output
+    return decoded_output
 
 
 def assert_version(
@@ -79,10 +83,24 @@ def test_conscript(foo_bar_conscript):
     assert_version(args=[foo_bar_conscript, "foo"], expected_version=FOO_VERSION)
     assert_version(args=[foo_bar_conscript, "bar"], expected_version=BAR_VERSION)
 
+    argv0 = (
+        os.path.basename(foo_bar_conscript)
+        if sys.version_info[:2] < (3, 14)
+        # N.B.: Python 3.14 changed how prog is calculated.
+        # For zipapps, its `sys.executable <zip>`.
+        else "python3.{minor} {zipapp}".format(minor=sys.version_info[1], zipapp=foo_bar_conscript)
+    )
+    usage_line = "usage: {argv0} [-h] [-V]".format(argv0=argv0)
+
+    # Ensure the usage line is rendered as 1 line.
+    env = os.environ.copy()
+    env["COLUMNS"] = str(max(len(usage_line) + 10, 80))
+
+    output = get_output(args=[foo_bar_conscript, "foo", "-h"], env=env)
     assert (
         dedent(
             """\
-            usage: {argv0} [-h] [-V]
+            {usage_line}
 
             The foo program.
 
@@ -90,19 +108,28 @@ def test_conscript(foo_bar_conscript):
               -h, --help     show this help message and exit
               -V, --version  show program's version number and exit
             """
-        ).format(options_header=OPTIONS_HEADER, argv0=os.path.basename(foo_bar_conscript))
-        == get_output(args=[foo_bar_conscript, "foo", "-h"])
-    )
+        ).format(usage_line=usage_line, options_header=OPTIONS_HEADER)
+        == output
+    ), output
 
-    assert get_output(args=[foo_bar_conscript, "baz"], expected_returncode=2).startswith(
+    output = get_output(args=[foo_bar_conscript, "baz"], expected_returncode=2)
+    assert output.startswith(
         (
             "usage: {argv0} [-h] [PROGRAM]\n"
             "{argv0}: error: argument PROGRAM: invalid choice: 'baz' (choose from {programs}"
         ).format(
             argv0=os.path.basename(foo_bar_conscript),
-            programs=", ".join("'{}'".format(program) for program in EXPECTED_PROGRAMS),
+            programs=", ".join(
+                (
+                    repr(program)
+                    if sys.version_info[:2] < (3, 14)
+                    # N.B.: Python 3.14 dropped wrapping the choices in ''.
+                    else program
+                )
+                for program in EXPECTED_PROGRAMS
+            ),
         )
-    )
+    ), output
 
 
 def test_busybox(foo_bar_conscript):
@@ -148,7 +175,7 @@ def test_busybox(foo_bar_conscript):
               -h, --help  Show this help message and exit.
             """
         ).format(options_header=OPTIONS_HEADER)
-    )
+    ), output
 
 
 def test_repl(foo_bar_conscript):
@@ -171,5 +198,5 @@ def test_repl(foo_bar_conscript):
         ).encode("utf8")
     )
     repl_output = output.decode("utf8")
-    assert "foo=={}".format(FOO_VERSION) in repl_output
-    assert "bar=={}".format(BAR_VERSION) in repl_output
+    assert "foo=={}".format(FOO_VERSION) in repl_output, repl_output
+    assert "bar=={}".format(BAR_VERSION) in repl_output, repl_output
