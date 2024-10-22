@@ -1,5 +1,9 @@
 # Conscript Release Notes
 
+## 0.1.8
+
++ [eab1a3a](https://github.com/jsirois/conscript/commit/eab1a3a) Add support for PI. (#10)
+
 ## 0.1.7
 
 + [271e589](https://github.com/jsirois/conscript/commit/271e589) Add support for Python 3.13. (#8)
