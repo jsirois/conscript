@@ -110,7 +110,7 @@ def test_conscript(foo_bar_conscript):
             argv0=os.path.basename(foo_bar_conscript),
             programs=", ".join(
                 (
-                    "'{}'".format(program)
+                    repr(program)
                     if sys.version_info[:2] < (3, 14)
                     # N.B.: Python 3.14 dropped wrapping the choices in ''.
                     else program
