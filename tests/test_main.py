@@ -46,9 +46,12 @@ def foo_bar_conscript(
 def get_output(
     args,  # type: List[str]
     expected_returncode=0,  # type: int
+    **kwargs  # type: str
 ):
     # type: (...) -> Text
-    process = subprocess.Popen(args=args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    process = subprocess.Popen(
+        args=args, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **kwargs
+    )
     output, _ = process.communicate()
     decoded_output = output.decode("utf8")
     assert expected_returncode == process.returncode, decoded_output
@@ -87,11 +90,17 @@ def test_conscript(foo_bar_conscript):
         # For zipapps, its `sys.executable <zip>`.
         else "python3.{minor} {zipapp}".format(minor=sys.version_info[1], zipapp=foo_bar_conscript)
     )
-    output = get_output(args=[foo_bar_conscript, "foo", "-h"])
+    usage_line = "usage: {argv0} [-h] [-V]".format(argv0=argv0)
+
+    # Ensure the usage line is rendered as 1 line.
+    env = os.environ.copy()
+    env["COLUMNS"] = str(max(len(usage_line) + 10, 80))
+
+    output = get_output(args=[foo_bar_conscript, "foo", "-h"], env=env)
     assert (
         dedent(
             """\
-            usage: {argv0} [-h] [-V]
+            {usage_line}
 
             The foo program.
 
@@ -99,7 +108,7 @@ def test_conscript(foo_bar_conscript):
               -h, --help     show this help message and exit
               -V, --version  show program's version number and exit
             """
-        ).format(options_header=OPTIONS_HEADER, argv0=argv0)
+        ).format(usage_line=usage_line, options_header=OPTIONS_HEADER)
         == output
     ), output
 
