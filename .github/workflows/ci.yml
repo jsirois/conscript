@@ -95,7 +95,15 @@ jobs:
         run: |
           alias python="${{ steps.pyenv.outputs.pyenv_root }}/versions/${{ join(matrix.python-version, '.') }}/bin/python"
           python -V
-          python -mpip install -U pip
+
+          pyver = "${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
+          if [[ "3.8" == "${pyver}" ]]; then
+            python -mensurepip -U
+          else
+            curl -fLO https://bootstrap.pypa.io/pip/${pyver}/get-pip.py
+            python get-pip.py
+            rm get-pip.py
+          fi
           python -mpip install -U tox
           python -mtox -epy${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
   unit-tests:
