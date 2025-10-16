@@ -1,5 +1,9 @@
 # Conscript Release Notes
 
+## 0.1.9
+
++ [d6969dd](https://github.com/jsirois/conscript/commit/d6969dd) Support Python 3.15. (#12)
+
 ## 0.1.8
 
 + [eab1a3a](https://github.com/jsirois/conscript/commit/eab1a3a) Add support for PI. (#10)
@@ -36,5 +40,6 @@
 ## 0.1.0
 
 Initial public release.
+
 
 
