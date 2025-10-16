@@ -122,7 +122,7 @@ def test_conscript(foo_bar_conscript):
             programs=", ".join(
                 (
                     repr(program)
-                    if sys.version_info[:2] < (3, 14)
+                    if sys.version_info[:2] < (3, 12)
                     # N.B.: Python 3.14 dropped wrapping the choices in ''.
                     else program
                 )
