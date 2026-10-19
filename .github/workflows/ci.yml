@@ -33,9 +33,9 @@ jobs:
             tox-env: check
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "${{ matrix.python-version }}"
       - name: Check ${{ matrix.check-name }}
@@ -59,36 +59,43 @@ jobs:
             os: ubuntu-24.04
           - python-version: [3, 8, 18]
             os: ubuntu-24.04
+          - python-version: [3, 16, "0a1"]
+            os: ubuntu-24.04
           - python-version: [2, 7, 18]
+            os: macos-15
+          - python-version: [3, 16, "0a1"]
             os: macos-15
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Install Python Build Deps
         if: matrix.os == 'ubuntu-24.04'
         run: |
           sudo apt update &&
-          sudo apt install -y \
+          DEBIAN_FRONTEND=noninteractive sudo apt install -y \
             build-essential \
-            libssl-dev \
-            zlib1g-dev \
-            libbz2-dev \
-            libreadline-dev \
-            libsqlite3-dev \
             curl \
             git \
+            libbz2-dev \
+            libffi-dev \
+            liblzma-dev \
             libncursesw5-dev \
-            xz-utils \
-            tk-dev \
+            libreadline-dev \
+            libsqlite3-dev \
+            libssl-dev \
             libxml2-dev \
             libxmlsec1-dev \
-            libffi-dev \
-            liblzma-dev
+            libzstd-dev \
+            make \
+            tk-dev \
+            xz-utils \
+            zlib1g-dev
       - name: Setup Python ${{ join(matrix.python-version, '.') }}
         id: pyenv
         # Upgrade node16 -> node20: Out for review here:
         #   https://github.com/gabrielfalcao/pyenv-action/pull/444
-        uses: pex-tool/pyenv-action@baec18679698d2f80064cc04eb9ad0c8dc5ca8f8
+        # Also upgrades pyenv to 2.8.10 to pick up 3.16.0a1.
+        uses: pex-tool/pyenv-action@dcccfcc2bb18b008eca1ee92bbb05425e7126ead
         with:
           default: "${{ join(matrix.python-version, '.') }}"
       - name: Run Unit Tests
@@ -97,7 +104,7 @@ jobs:
           python -V
 
           pyver="${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
-          if [[ "3.8" == "${pyver}" ]]; then
+          if [[ "3.8" == "${pyver}" ]] || [[ "3.16" == "${pyver}" ]]; then
             python -mensurepip
           else
             curl -fLO https://bootstrap.pypa.io/pip/${pyver}/get-pip.py
@@ -127,20 +134,18 @@ jobs:
           - os: ubuntu-24.04
             python-version: [3, 14]
           - os: ubuntu-24.04
-            python-version: [3, 15, "0-alpha.1"]
+            python-version: [3, 15]
           - os: macos-15
-            python-version: [3, 14]
-          - os: macos-15
-            python-version: [3, 15, "0-alpha.1"]
+            python-version: [3, 15]
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
       - name: Setup Python ${{ join(matrix.python-version, '.') }}
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: "${{ join(matrix.python-version, '.') }}"
       - name: Setup Tox Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v7
         with:
           python-version: 3.11
       - name: Run Unit Tests
