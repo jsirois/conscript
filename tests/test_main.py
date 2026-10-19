@@ -116,16 +116,13 @@ def test_conscript(foo_bar_conscript):
     assert output.startswith(
         (
             "usage: {argv0} [-h] [PROGRAM]\n"
-            "{argv0}: error: argument PROGRAM: invalid choice: 'baz' (choose from {programs}"
+            "{argv0}: error: argument PROGRAM: invalid choice: 'baz'{suggestion} "
+            "(choose from {programs}"
         ).format(
             argv0=os.path.basename(foo_bar_conscript),
+            suggestion=", maybe you meant 'bar'?" if sys.version_info >= (3, 15) else "",
             programs=", ".join(
-                (
-                    repr(program)
-                    if sys.version_info[:2] < (3, 12)
-                    # N.B.: Python 3.14 dropped wrapping the choices in ''.
-                    else program
-                )
+                (program if sys.version_info[:2] == (3, 12) else repr(program))
                 for program in EXPECTED_PROGRAMS
             ),
         )
