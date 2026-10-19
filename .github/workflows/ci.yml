@@ -92,6 +92,7 @@ jobs:
             zlib1g-dev
       - name: Install Pyenv
         run: |
+          cd "${RUNNER_TOOL_CACHE}"
           git clone https://github.com/pyenv/pyenv
           (
             cd pyenv
