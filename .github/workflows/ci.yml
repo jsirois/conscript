@@ -106,22 +106,16 @@ jobs:
         run: |
           pyenv install ${{ join(matrix.python-version, '.') }}
           echo "${PYENV_ROOT}/versions/${{ join(matrix.python-version, '.') }}/bin" >> "${GITHUB_PATH}"
+      - name: Setup Tox Python
+        uses: actions/setup-python@v7.0.0
+        with:
+          python-version: 3.11
       - name: Run Unit Tests
         run: |
-          alias python="${PYENV_ROOT}/versions/${{ join(matrix.python-version, '.') }}/bin/python"
-          python -V
-
-          pyver="${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
-          if [[ "3.8" == "${pyver}" ]] || [[ "3.16" == "${pyver}" ]]; then
-            python -mensurepip
-          else
-            curl -fLO https://bootstrap.pypa.io/pip/${pyver}/get-pip.py
-            python get-pip.py
-            rm get-pip.py
-          fi
-          python -mpip install -U pip
-          python -mpip install -U tox
-          python -mtox -epy${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
+          python3.11 -V
+          python3.11 -mpip install -U pip
+          python3.11 -mpip install -U tox
+          python3.11 -mtox -epy${{ matrix.python-version[0] }}${{ matrix.python-version[1] }} -- -vvs
   unit-tests:
     name: (${{ matrix.os }}) TOXENV=py${{ matrix.python-version[0] }}${{ matrix.python-version[1] }}
     needs: org-check
