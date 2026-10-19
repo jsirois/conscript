@@ -33,13 +33,13 @@ jobs:
             tox-env: check
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       - name: Setup Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "${{ matrix.python-version }}"
       - name: Check ${{ matrix.check-name }}
-        uses: pantsbuild/actions/run-tox@b16b9cf47cd566acfe217b1dafc5b452e27e6fd7
+        uses: pantsbuild/actions/run-tox@main
         with:
           tox-env: ${{ matrix.tox-env }}
   unit-tests-legacy:
@@ -67,11 +67,11 @@ jobs:
             os: macos-15
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       - name: Install Python Build Deps
         if: matrix.os == 'ubuntu-24.04'
         run: |
-          sudo apt update &&
+          sudo apt update
           DEBIAN_FRONTEND=noninteractive sudo apt install -y \
             build-essential \
             curl \
@@ -90,17 +90,24 @@ jobs:
             tk-dev \
             xz-utils \
             zlib1g-dev
+      - name: Install Pyenv
+        run: |
+          git clone https://github.com/pyenv/pyenv
+          (
+            cd pyenv
+            src/configure
+            make -C src
+          )
+          export PYENV_ROOT="$PWD/pyenv"
+          echo "PYENV_ROOT=${PYENV_ROOT}" >> "${GITHUB_ENV}"
+          echo "${PYENV_ROOT}/bin" >> "${GITHUB_PATH}"
       - name: Setup Python ${{ join(matrix.python-version, '.') }}
-        id: pyenv
-        # Upgrade node16 -> node20: Out for review here:
-        #   https://github.com/gabrielfalcao/pyenv-action/pull/444
-        # Also upgrades pyenv to 2.8.10 to pick up 3.16.0a1.
-        uses: pex-tool/pyenv-action@dcccfcc2bb18b008eca1ee92bbb05425e7126ead
-        with:
-          default: "${{ join(matrix.python-version, '.') }}"
+        run: |
+          pyenv install ${{ join(matrix.python-version, '.') }}
+          echo "${PYENV_ROOT}/versions/${{ join(matrix.python-version, '.') }}/bin" >> "${GITHUB_PATH}"
       - name: Run Unit Tests
         run: |
-          alias python="${{ steps.pyenv.outputs.pyenv_root }}/versions/${{ join(matrix.python-version, '.') }}/bin/python"
+          alias python="${PYENV_ROOT}/versions/${{ join(matrix.python-version, '.') }}/bin/python"
           python -V
 
           pyver="${{ matrix.python-version[0] }}.${{ matrix.python-version[1] }}"
@@ -139,13 +146,13 @@ jobs:
             python-version: [3, 15]
     steps:
       - name: Checkout
-        uses: actions/checkout@v7
+        uses: actions/checkout@v7.0.1
       - name: Setup Python ${{ join(matrix.python-version, '.') }}
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: "${{ join(matrix.python-version, '.') }}"
       - name: Setup Tox Python
-        uses: actions/setup-python@v7
+        uses: actions/setup-python@v7.0.0
         with:
           python-version: 3.11
       - name: Run Unit Tests
