@@ -1,5 +1,9 @@
 # Conscript Release Notes
 
+## 0.1.10
+
++ [4634042](https://github.com/jsirois/conscript/commit/4634042) Support Python 3.16. (#14)
+
 ## 0.1.9
 
 + [d6969dd](https://github.com/jsirois/conscript/commit/d6969dd) Support Python 3.15. (#12)
